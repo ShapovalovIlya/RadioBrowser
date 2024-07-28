@@ -14,6 +14,5 @@ extension Request {
     enum Method: String { case GET, POST, PUT, DELETE }
     
     init(_ url: URL) { self.init(URLRequest(url: url)) }
-    
-    
+    func method(_ m: Method) -> Self { self.httpMethod(m.rawValue) }
 }
