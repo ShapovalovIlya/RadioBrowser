@@ -15,6 +15,7 @@ extension Endpoint {
     
     static let stations = Endpoint.server.appending(path: "stations")
     static let countries = Endpoint.server.appending(path: "countries")
+    static let tags = Endpoint.server.appending(path: "tags")
     static let search = Endpoint.stations.appending(path: "search")
     
     static func countries(offset: Int, limit: Int) -> Self {
@@ -23,11 +24,24 @@ extension Endpoint {
             .pagination(offset: offset, limit: limit)
     }
     
+    static func tags(offset: Int, limit: Int) -> Self {
+        Endpoint
+            .tags
+            .pagination(offset: offset, limit: limit)
+    }
+    
     static func topVote(offset: Int, limit: Int) -> Self {
         Endpoint
             .stations
             .appending(path: "topvote")
             .commonItems(offset: offset, limit: limit)
+    }
+    
+    static func vote(for stationId: UUID) -> Self {
+        Endpoint
+            .server
+            .appending(path: "url")
+            .appending(path: stationId.uuidString)
     }
     
     static func all(offset: Int, limit: Int) -> Self {
