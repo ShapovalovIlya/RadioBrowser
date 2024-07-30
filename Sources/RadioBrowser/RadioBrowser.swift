@@ -19,6 +19,7 @@ public final class RadioBrowser {
         self.session = URLSession(configuration: config)
         self.logger = logger
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
         logger?.trace(#function)
     }
     

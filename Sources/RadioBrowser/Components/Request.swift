@@ -11,8 +11,9 @@ import SwiftFP
 typealias Request = Monad<URLRequest>
 
 extension Request {
-    enum Method: String { case GET, POST, PUT, DELETE }
+    enum Method: String { case get, post, put, delete, head }
     
     init(_ url: URL) { self.init(URLRequest(url: url)) }
-    func method(_ m: Method) -> Self { self.httpMethod(m.rawValue) }
+    
+    func method(_ m: Method) -> Self { self.httpMethod(m.rawValue.uppercased()) }
 }
