@@ -28,6 +28,9 @@ public final class RadioBrowser {
     }
     
     //MARK: - Public methods
+    func getTags() async -> Result<[String], Error> {
+        .success([])
+    }
 }
 
 //MARK: - Private methods

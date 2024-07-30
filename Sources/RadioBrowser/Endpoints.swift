@@ -49,4 +49,26 @@ extension Endpoint {
             .search
             .commonItems(offset: offset, limit: limit)
     }
+    
+    static func search(byName name: String, offset: Int, limit: Int) -> Self {
+        Endpoint
+            .search
+            .queryItems {
+                URLQueryItem(name: "name", value: name)
+            }
+            .commonItems(offset: offset, limit: limit)
+    }
+    
+    static func stations(withIds ids: [UUID]) -> Self {
+        Endpoint
+            .stations
+            .appending(path: "byuuid")
+            .queryItems {
+                URLQueryItem(
+                    name: "uuids",
+                    value: ids.map(\.uuidString).joined(separator: ",")
+                )
+            }
+    }
+    
 }
