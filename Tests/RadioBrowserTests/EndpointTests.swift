@@ -41,7 +41,7 @@ struct EndpointTests {
     }
 
     @Test func allStations() async throws {
-        let exp = URL(string: "http://91.132.145.114/json/stations/search?hidebroken=true&offset=0&limit=20")
+        let exp = URL(string: "http://91.132.145.114/json/stations?hidebroken=true&offset=0&limit=20")
         let sut = makeSut(.all(offset: 0, limit: 20))
                 
         #expect(sut == exp)

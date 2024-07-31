@@ -46,7 +46,7 @@ extension Endpoint {
     
     static func all(offset: Int, limit: Int) -> Self {
         Endpoint
-            .search
+            .stations
             .commonItems(offset: offset, limit: limit)
     }
     

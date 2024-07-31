@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import SwiftFP
 
-public struct Station: Codable {
+public struct Station: Codable, Equatable {
     /// A globally unique identifier for the change of the station information
     public let changeUUID: UUID
     
@@ -143,6 +143,57 @@ public struct Station: Codable {
         self.tags = try container.decode(String.self, forKey: .tags).components(separatedBy: separator)
         self.language = try container.decode(String.self, forKey: .language).components(separatedBy: separator)
         self.languageCodes = try container.decode(String.self, forKey: .languageCodes).components(separatedBy: separator)
+    }
+    
+    //MARK: - init(_:)
+    init(
+        changeUUID: UUID,
+        stationUUID: UUID,
+        serverUUID: UUID,
+        name: String,
+        url: String,
+        urlResolved: String,
+        homepage: String,
+        favicon: String,
+        tags: [String],
+        countryCode: String,
+        state: String,
+        language: [String],
+        languageCodes: [String],
+        votes: Int,
+        codec: String,
+        bitrate: Int,
+        lastCheckOk: Bool,
+        lastCheckTime: Date,
+        lastCheckOkTime: Date,
+        lastLocalCheckTime: Date,
+        geoLat: Double? = nil,
+        geoLong: Double? = nil,
+        hasExtendedInfo: Bool? = nil
+    ) {
+        self.changeUUID = changeUUID
+        self.stationUUID = stationUUID
+        self.serverUUID = serverUUID
+        self.name = name
+        self.url = url
+        self.urlResolved = urlResolved
+        self.homepage = homepage
+        self.favicon = favicon
+        self.tags = tags
+        self.countryCode = countryCode
+        self.state = state
+        self.language = language
+        self.languageCodes = languageCodes
+        self.votes = votes
+        self.codec = codec
+        self.bitrate = bitrate
+        self.lastCheckOk = lastCheckOk
+        self.lastCheckTime = lastCheckTime
+        self.lastCheckOkTime = lastCheckOkTime
+        self.lastLocalCheckTime = lastLocalCheckTime
+        self.geoLat = geoLat
+        self.geoLong = geoLong
+        self.hasExtendedInfo = hasExtendedInfo
     }
     
     //MARK: - Public methods
