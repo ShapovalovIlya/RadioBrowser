@@ -9,12 +9,22 @@ import Foundation
 
 /// Тип ошибок, возникающих в процессе работы ``RadioBrowser``.
 public enum RadioError: Error, Sendable {
+    case badRequest
+    case forbidden
+    case notFound
+    case notAllowed
+    case internalServerError
     case decodeFail(DecodingError)
     case encodeFail(EncodingError)
     case unknown(Error)
     
     init?(statusCode: Int) {
         switch statusCode {
+        case 400: self = .badRequest
+        case 403: self = .forbidden
+        case 404: self = .notFound
+        case 405: self = .notAllowed
+        case 500...599: self = .internalServerError
         default: return nil
         }
     }

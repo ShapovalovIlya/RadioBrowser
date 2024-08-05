@@ -31,12 +31,12 @@ public final class RadioBrowser: Sendable {
         self.logger = logger
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .iso8601
-        logger?.trace(#function)
+        logger?.trace("RadioBrowser.\(#function)")
     }
     
     //MARK: - deinit
     deinit {
-        logger?.trace(#function)
+        logger?.trace("RadioBrowser.\(#function)")
     }
     
     //MARK: - Public methods
@@ -138,11 +138,7 @@ public final class RadioBrowser: Sendable {
     /// - Returns: коллекция ``Station`` или ошибка ``RadioError``, возникшая в процессе.
     @Sendable
     public func getStations(withIds uuids: [UUID]) async -> Result<[Station], RadioError> {
-        await perform(
-            .get,
-            .stations(withIds: uuids),
-            ofType: [Station].self
-        )
+        await perform(.get, .stations(withIds: uuids), ofType: [Station].self)
     }
     
     /// Возвращает радио-станцию по переданному `UUID`, если такая есть
@@ -150,13 +146,23 @@ public final class RadioBrowser: Sendable {
     /// - Returns: ``Station`` или ошибка ``RadioError``, возникшая в процессе.
     @Sendable
     public func getStation(withId id: UUID) async -> Result<Station?, RadioError> {
-        await perform(
-            .get,
-            .stations(withIds: [id]),
-            ofType: [Station].self
-        )
-        .map(\.first)
+        await perform(.get, .stations(withIds: [id]), ofType: [Station].self)
+            .map(\.first)
     }
+    
+    /// Увеличеие счетчика голосов на выбранную радио - станцию
+    /// - Parameter id: уникальный идентификатор станции
+    /// - Returns: результат, засчитался ли голос или  ошибка ``RadioError``, возникшая в процессе.
+    @Sendable
+    public func voteForStation(withId id: UUID) async -> Result<Bool, RadioError> {
+        await perform(.get, .vote(for: id), ofType: VoteResult.self)
+            .map(\.ok)
+    }
+}
+
+struct VoteResult: Decodable {
+    let ok: Bool
+    let message: String
 }
 
 private extension RadioBrowser {
@@ -216,6 +222,18 @@ private extension RadioBrowser {
         .tryMap(unwrap(payload:))
         .decodeJSON(type.self, decoder: decoder)
         .mapError(RadioError.map(_:))
+        .map(log(success:))
+        .mapError(log(failure:))
+    }
+    
+    func log<T: Decodable>(success: T) -> T {
+        logger?.trace("Request success!")
+        return success
+    }
+    
+    func log(failure: RadioError) -> RadioError {
+        logger?.error("Request failed: \(String(describing: failure))")
+        return failure
     }
     
     func unwrap(payload: Payload) throws -> Data {
