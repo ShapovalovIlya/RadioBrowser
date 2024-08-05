@@ -17,7 +17,7 @@ public struct Station: Codable, Equatable {
     public let stationUUID: UUID
     
     /// ?
-    public let serverUUID: UUID
+    public let serverUUID: UUID?
     
     /// The name of the station
     public let name: String
@@ -119,7 +119,7 @@ public struct Station: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.changeUUID = try container.decode(UUID.self, forKey: .changeUUID)
         self.stationUUID = try container.decode(UUID.self, forKey: .stationUUID)
-        self.serverUUID = try container.decode(UUID.self, forKey: .serverUUID)
+        self.serverUUID = try container.decodeIfPresent(UUID.self, forKey: .serverUUID)
         self.name = try container.decode(String.self, forKey: .name)
         self.url = try container.decode(String.self, forKey: .url)
         self.urlResolved = try container.decode(String.self, forKey: .urlResolved)
