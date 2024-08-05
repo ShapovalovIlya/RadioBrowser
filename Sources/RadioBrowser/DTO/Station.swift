@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 import SwiftFP
 
-public struct Station: Codable, Equatable {
+public struct Station: Codable, Equatable, Sendable {
     /// A globally unique identifier for the change of the station information
     public let changeUUID: UUID
     

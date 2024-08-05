@@ -15,5 +15,6 @@ extension Request {
     
     init(_ url: URL) { self.init(URLRequest(url: url)) }
     
+    @Sendable
     func method(_ m: Method) -> Self { self.httpMethod(m.rawValue.uppercased()) }
 }

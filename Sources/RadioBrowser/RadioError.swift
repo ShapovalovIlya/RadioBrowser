@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum RadioError: Error {
+public enum RadioError: Error, Sendable {
     case decodeFail(DecodingError)
     case encodeFail(EncodingError)
     case unknown(Error)

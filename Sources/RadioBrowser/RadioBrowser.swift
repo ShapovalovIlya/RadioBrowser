@@ -5,7 +5,11 @@ import Foundation
 import SwiftFP
 import OSLog
 
-public final class RadioBrowser {
+public final class RadioBrowser: Sendable {
+    
+    /// Публичный экземпляр `RadioBrowser` с конфигурацией по умолчанию.
+    public static let `default` = RadioBrowser()
+    
     //MARK: - Private properties
     private let session: URLSession
     private let decoder = JSONDecoder()
@@ -36,6 +40,7 @@ public final class RadioBrowser {
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
     /// - Returns: Результат запроса или ошибка, возникшая в процессе.
+    @Sendable
     public func getTags(
         offset: Int = 0,
         limit: Int = 20
@@ -47,6 +52,7 @@ public final class RadioBrowser {
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
+    @Sendable
     public func getCountries(
         offset: Int = 0,
         limit: Int = 20
@@ -58,6 +64,7 @@ public final class RadioBrowser {
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
+    @Sendable
     public func getAllStations(
         offset: Int = 0,
         limit: Int = 20
@@ -69,6 +76,7 @@ public final class RadioBrowser {
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
+    @Sendable
     public func getPopularStation(
         offset: Int = 0,
         limit: Int = 20

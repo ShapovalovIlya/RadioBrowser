@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct StationTag: Codable, Equatable {
+public struct StationTag: Codable, Equatable, Sendable {
     public let name: String
     public let stationcount: Int
 }
