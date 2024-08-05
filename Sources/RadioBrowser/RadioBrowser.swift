@@ -35,7 +35,7 @@ public final class RadioBrowser: Sendable {
     
     //MARK: - Public methods
     
-    /// Список всех тэгов для радио станций.
+    /// Возвращает cписок всех тэгов для радио станций.
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
@@ -46,9 +46,11 @@ public final class RadioBrowser: Sendable {
         limit: Int = 20
     ) async -> Result<[StationTag], RadioError> {
         await perform(.get, .tags(offset: offset, limit: limit))
+            .decodeJSON([StationTag].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
     }
     
-    /// Список всех стран радио станций.
+    /// Возвращает cписок всех стран радио станций.
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
@@ -58,9 +60,11 @@ public final class RadioBrowser: Sendable {
         limit: Int = 20
     ) async -> Result<[Country], RadioError> {
         await perform(.get, .countries(offset: offset, limit: limit))
+            .decodeJSON([Country].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
     }
     
-    /// Список всех радио станций
+    /// Возвращает cписок всех радио станций
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
@@ -70,9 +74,11 @@ public final class RadioBrowser: Sendable {
         limit: Int = 20
     ) async -> Result<[Station], RadioError> {
         await perform(.get, .all(offset: offset, limit: limit))
+            .decodeJSON([Station].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
     }
     
-    /// Список радио-станций с самым высоким рейтингом
+    /// Возвращает cписок радио-станций с самым высоким рейтингом
     /// - Parameters:
     ///   - offset: отступ. Для пагинации.
     ///   - limit: максимальный размер массива элементов в запросе.
@@ -82,9 +88,11 @@ public final class RadioBrowser: Sendable {
         limit: Int = 20
     ) async -> Result<[Station], RadioError> {
         await perform(.get, .topVote(offset: offset, limit: limit))
+            .decodeJSON([Station].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
     }
     
-    /// Список радио-станций, чью название совпадает/ содержит передаваемую строку
+    /// Возвращает cписок радио-станций, чью название совпадает/ содержит передаваемую строку
     /// - Parameters:
     ///   - name: название радио-станции
     ///   - offset: отступ. Для пагинации.
@@ -96,49 +104,40 @@ public final class RadioBrowser: Sendable {
         limit: Int = 20
     ) async -> Result<[Station], RadioError> {
         await perform(.get, .search(byName: name, offset: offset, limit: limit))
+            .decodeJSON([Station].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
     }
     
-    /// Список радио-станций, ассоциированных с переданными идентификаторами.
+    /// Возвращает cписок радио-станций, ассоциированных с переданными идентификаторами.
     ///
     ///  Ожидаемое поведение:
-    ///
+    ///  - Сервис отдаст станции для указанных `UUID`
+    ///  - Сервис отдаст столько станций, сколько передано `UUID` в метод
     ///
     /// - Parameter uuids: массив уникальных идентификаторов радио-станций
-    /// - Returns: <#description#>
+    /// - Returns: Массив с радио станциями, согласно переданным `UUID`, либо ошибка, возникшая в процессе запроса
     @Sendable
     public func getStations(withIds uuids: [UUID]) async -> Result<[Station], RadioError> {
         await perform(.get, .stations(withIds: uuids))
+            .decodeJSON([Station].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
+    }
+    
+    /// Возвращает радио-станцию по переданному `UUID`, если такая есть
+    /// - Parameter id: уникальный идентификатор радио-станции
+    @Sendable
+    public func getStation(withId id: UUID) async -> Result<Station?, RadioError> {
+        await perform(.get, .stations(withIds: [id]))
+            .decodeJSON([Station].self, decoder: decoder)
+            .mapError(RadioError.map(_:))
+            .map(\.first)
     }
 }
 
-//MARK: - Private methods
 private extension RadioBrowser {
+    //MARK: - Payload
     typealias Payload = (data: Data, response: URLResponse)
     
-    func perform<T: Decodable>(
-        _ method: RequestType,
-        _ endpoint: Endpoint
-    ) async -> Result<T, RadioError> {
-        await Result {
-            try endpoint
-                .composeUrl()
-                .flatMap(Request.init)
-                .method(method.toMethod)
-                .httpBody(method.encodePayload(with: encoder))
-                .value
-        }
-        .asyncTryMap(session.data)
-        .tryMap(unwrap(payload:))
-        .decodeJSON(T.self, decoder: decoder)
-        .mapError(RadioError.map(_:))
-    }
-    
-    func unwrap(payload: Payload) throws -> Data {
-        return payload.data
-    }
-}
-
-private extension RadioBrowser {
     //MARK: - RequestType
     enum RequestType {
         case get
@@ -162,5 +161,41 @@ private extension RadioBrowser {
                 return try encoder.encode(model)
             }
         }
+    }
+}
+
+//MARK: - Private methods
+private extension RadioBrowser {
+    
+    func perform(
+        _ method: RequestType,
+        _ endpoint: Endpoint
+    ) async -> Result<Data, Error> {
+        logger?.trace(
+            """
+            Performing request... 
+            Method: \(String(describing: method))
+            
+            Endpoint: \(String(describing: endpoint.string))
+            """
+        )
+        return await Result {
+            try endpoint
+                .composeUrl()
+                .flatMap(Request.init)
+                .method(method.toMethod)
+                .httpBody(method.encodePayload(with: encoder))
+                .value
+        }
+        .asyncTryMap(session.data)
+        .tryMap(unwrap(payload:))
+    }
+    
+    func unwrap(payload: Payload) throws -> Data {
+        guard let httpResponse = payload.response as? HTTPURLResponse else {
+            logger?.error("Invalid response type: \(String(describing: payload.response))")
+            throw URLError(.cannotParseResponse)
+        }
+        return payload.data
     }
 }
