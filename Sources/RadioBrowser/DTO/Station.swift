@@ -40,7 +40,7 @@ public struct Station: Codable, Equatable, Sendable {
     
     /// Official country codes as in ISO 3166-1 alpha-2
     ///
-    /// ``https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2``
+    /// `https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2`
     public let countryCode: String
 
     /// Full name of the entity where the station is located inside the country
@@ -51,7 +51,7 @@ public struct Station: Codable, Equatable, Sendable {
     
     /// Languages that are spoken in this stream by code ISO 639-2/B
     ///
-    /// ``https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes``
+    /// `https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes`
     public let languageCodes: [String]
     
     /// Number of votes for this station. This number is by server and only ever increases. It will never be reset to 0.
