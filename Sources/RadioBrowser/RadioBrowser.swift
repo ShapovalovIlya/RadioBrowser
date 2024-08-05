@@ -83,6 +83,32 @@ public final class RadioBrowser: Sendable {
     ) async -> Result<[Station], RadioError> {
         await perform(.get, .topVote(offset: offset, limit: limit))
     }
+    
+    /// Список радио-станций, чью название совпадает/ содержит передаваемую строку
+    /// - Parameters:
+    ///   - name: название радио-станции
+    ///   - offset: отступ. Для пагинации.
+    ///   - limit: максимальный размер массива элементов в запросе.
+    @Sendable
+    public func searchStation(
+        named name: String,
+        offset: Int = 0,
+        limit: Int = 20
+    ) async -> Result<[Station], RadioError> {
+        await perform(.get, .search(byName: name, offset: offset, limit: limit))
+    }
+    
+    /// Список радио-станций, ассоциированных с переданными идентификаторами.
+    ///
+    ///  Ожидаемое поведение:
+    ///
+    ///
+    /// - Parameter uuids: массив уникальных идентификаторов радио-станций
+    /// - Returns: <#description#>
+    @Sendable
+    public func getStations(withIds uuids: [UUID]) async -> Result<[Station], RadioError> {
+        await perform(.get, .stations(withIds: uuids))
+    }
 }
 
 //MARK: - Private methods
