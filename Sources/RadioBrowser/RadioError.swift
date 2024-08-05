@@ -9,6 +9,7 @@ import Foundation
 
 public enum RadioError: Error {
     case decodeFail(DecodingError)
+    case encodeFail(EncodingError)
     case unknown(Error)
     
     static func map(_ error: Error) -> RadioError {
@@ -18,6 +19,9 @@ public enum RadioError: Error {
             
         case let reason as DecodingError:
             return .decodeFail(reason)
+            
+        case let reason as EncodingError:
+            return .encodeFail(reason)
             
         default:
             return .unknown(error)
