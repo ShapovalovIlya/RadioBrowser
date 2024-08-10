@@ -34,7 +34,7 @@ struct EndpointTests {
     
     @Test func stationClick() async throws {
         let id = UUID()
-        let exp = URL(string: "http://91.132.145.114/json/url/".appending(id.uuidString))
+        let exp = URL(string: "http://91.132.145.114/json/vote/".appending(id.uuidString))
         let sut = makeSut(.vote(for: id))
         
         #expect(sut == exp)
