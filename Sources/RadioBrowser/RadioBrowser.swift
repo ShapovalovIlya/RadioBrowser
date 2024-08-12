@@ -154,15 +154,9 @@ public final class RadioBrowser: Sendable {
     /// - Parameter id: уникальный идентификатор станции
     /// - Returns: результат, засчитался ли голос или  ошибка ``RadioError``, возникшая в процессе.
     @Sendable
-    public func voteForStation(withId id: UUID) async -> Result<Bool, RadioError> {
+    public func voteForStation(withId id: UUID) async -> Result<VoteResult, RadioError> {
         await perform(.get, .vote(for: id), ofType: VoteResult.self)
-            .map(\.ok)
     }
-}
-
-struct VoteResult: Decodable {
-    let ok: Bool
-    let message: String
 }
 
 private extension RadioBrowser {
