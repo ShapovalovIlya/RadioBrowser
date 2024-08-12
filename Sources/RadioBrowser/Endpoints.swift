@@ -40,7 +40,7 @@ extension Endpoint {
     static func vote(for stationId: UUID) -> Self {
         Endpoint
             .server
-            .appending(path: "voteç")
+            .appending(path: "vote")
             .appending(path: stationId.uuidString)
     }
     
