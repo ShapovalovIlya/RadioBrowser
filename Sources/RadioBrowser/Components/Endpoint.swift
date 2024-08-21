@@ -11,6 +11,8 @@ import SwiftFP
 typealias Endpoint = Monad<URLComponents>
 
 extension Endpoint {
+    typealias QueryBuilder = [URLQueryItem].Builder
+    
     //MARK: - Scheme
     enum Scheme: String { case http, https }
     
@@ -23,7 +25,7 @@ extension Endpoint {
         self.path(self.path.appending("/").appending(path))
     }
     
-    func queryItems(@QueryItemBuilder _ builder: () -> [URLQueryItem]) -> Self {
+    func queryItems(@QueryBuilder _ builder: () -> [URLQueryItem]) -> Self {
         guard let queryItems else { return self.queryItems(builder()) }
         return self.queryItems(queryItems + builder())
     }
@@ -55,13 +57,4 @@ extension Endpoint {
         .pagination(offset: offset, limit: limit)
     }
 
-}
-
-@resultBuilder
-enum QueryItemBuilder {
-    
-    @inlinable
-    static func buildBlock(_ components: URLQueryItem...) -> [URLQueryItem] {
-        components
-    }
 }
